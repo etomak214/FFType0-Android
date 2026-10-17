@@ -1,0 +1,145 @@
+name: FF Type-0 Android APK (PSP runtime test)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/type0-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-psp-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout build configuration
+        uses: actions/checkout@v4
+
+      - name: Restore custom launcher source
+        shell: bash
+        run: |
+          mkdir -p type0 tests
+          cat > /tmp/type0_code.b64 <<'TYPE0_PAYLOAD'
+          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
+          TYPE0_PAYLOAD
+          base64 --decode /tmp/type0_code.b64 | tar -xz -C .
+          python3 -m py_compile type0/apply_to_ppsspp.py
+          python3 -m unittest discover -s tests -v
+
+      - name: Clone official PPSSPP and its native dependencies
+        shell: bash
+        run: |
+          git clone --recurse-submodules --shallow-submodules --depth=200 https://github.com/hrydgard/ppsspp.git ppsspp
+          test -f ppsspp/android/build.gradle.kts
+          test -f ppsspp/android/src/org/ppsspp/ppsspp/PpssppActivity.java
+
+      - name: Patch APK with dedicated FF Type-0 launcher
+        shell: bash
+        run: python3 type0/apply_to_ppsspp.py ppsspp
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build ARM64 APK with native PSP engine
+        working-directory: ppsspp
+        shell: bash
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleNormalOptimized --stacktrace --no-daemon
+
+      - name: Inspect generated APK and copy artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=$(find ppsspp/android/build/outputs/apk -type f -name '*.apk' | grep -i normal | grep -i optimized | head -n 1)
+          test -n "$APK"
+          unzip -l "$APK" | grep -E 'lib/arm64-v8a/[^ ]+\.so'
+          mkdir -p output
+          cp "$APK" output/FFType0_EngineTest_ARM64.apk
+          sha256sum output/FFType0_EngineTest_ARM64.apk > output/SHA256.txt
+
+      - name: Upload experimental APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FFType0-Engine-Test-APK
+          path: output/
+          if-no-files-found: error
+          
