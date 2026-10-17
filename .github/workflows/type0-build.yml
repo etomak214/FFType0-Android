@@ -129,7 +129,7 @@ jobs:
         shell: bash
         run: |
           chmod +x gradlew
-          ./gradlew assembleNormalOptimized --stacktrace --no-daemon
+          ./gradlew assembleNormalOptimized -PANDROID_VERSION_CODE=10001 -PANDROID_VERSION_NAME=1.0.1 --stacktrace --no-daemon
 
       - name: Inspect generated APK and copy artifact
         shell: bash
@@ -148,4 +148,3 @@ jobs:
           name: FFType0-Engine-Test-APK
           path: output/
           if-no-files-found: error
-          
