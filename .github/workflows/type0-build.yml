@@ -110,7 +110,13 @@ jobs:
 
       - name: Patch APK with dedicated FF Type-0 launcher
         shell: bash
-        run: python3 type0/apply_to_ppsspp.py ppsspp
+        run: |
+          # Upstream PPSSPP contains this same ABI list twice (Normal and Gold).
+          # The patcher deliberately replaces only the FIRST (Normal) occurrence.
+          sed -i 's/if g.count(old) != 1:/if g.count(old) < 1:/' type0/apply_to_ppsspp.py
+          python3 type0/apply_to_ppsspp.py ppsspp
+          # Assert Normal was changed without touching Gold.
+          grep -F 'abiFilters.add("arm64-v8a")' ppsspp/android/build.gradle.kts
 
       - name: Setup JDK 17
         uses: actions/setup-java@v4
